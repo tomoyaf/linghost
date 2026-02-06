@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-ink-950 text-ink-100 font-sans antialiased;
+  }
+}
+
+@layer components {
+  .typewriter-cursor::after {
+    content: "▎";
+    @apply animate-cursor-blink text-amber-400/80 ml-0.5;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-ink-900;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-ink-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-ink-500;
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: theme('colors.ink.600') theme('colors.ink.900');
+}
+
+/* Story text styling */
+.story-text {
+  @apply font-serif text-lg leading-relaxed text-ink-100;
+}
+
+.story-text p {
+  @apply mb-4 indent-8 first:indent-0;
+}
