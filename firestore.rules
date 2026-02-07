@@ -5,7 +5,18 @@ service cloud.firestore {
     // Users can only read their own stories
     match /users/{userId}/stories/{storyId} {
       allow read: if request.auth != null && request.auth.uid == userId;
-      // All writes go through firebase-admin (server-side)
+      allow write: if false;
+    }
+
+    // Users can only read their own likes
+    match /users/{userId}/likes/{likeId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if false;
+    }
+
+    // Timeline is readable by any authenticated user
+    match /timeline/{storyId} {
+      allow read: if request.auth != null;
       allow write: if false;
     }
 

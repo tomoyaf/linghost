@@ -62,3 +62,26 @@ export interface StoredStory {
   citations: Citation[];
   createdAt: Date;
 }
+
+export interface TimelineStory {
+  id: string;
+  title: string;
+  text: string;
+  config: StoryConfig;
+  citations: Citation[];
+  authorUid: string;
+  authorDisplayName: string;
+  authorPhotoURL: string | null;
+  likeCount: number;
+  createdAt: Date;
+}
+
+export interface UserLike {
+  timelineStoryId: string;
+  likedAt: Date;
+  storyTitle: string;
+  storyPreview: string;
+  authorDisplayName: string;
+  authorPhotoURL: string | null;
+  storyConfig: StoryConfig;
+}

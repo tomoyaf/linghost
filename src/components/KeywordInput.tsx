@@ -41,6 +41,17 @@ const KEYWORD_POOL = [
   "Kyoto", "Istanbul", "Bruges", "Casablanca", "Petra",
   "Zanzibar", "Reykjavik", "Tangier", "Dubrovnik", "Varanasi",
   "Patagonia", "Transylvania", "Santorini", "Timbuktu", "Kathmandu",
+  // historical figures
+  "Cleopatra", "Leonardo da Vinci", "Napoleon", "Joan of Arc", "Genghis Khan",
+  "Marie Curie", "Shakespeare", "Mozart", "Galileo", "Tutankhamun",
+  "Alexander the Great", "Nefertiti", "Marco Polo", "Nikola Tesla", "Frida Kahlo",
+  "Beethoven", "Socrates", "Catherine the Great", "Hannibal", "Murasaki Shikibu",
+  "Darwin", "Michelangelo", "Machiavelli", "Boudicca", "Ramesses II",
+  "Confucius", "Hatshepsut", "Copernicus", "Sappho", "Saladin",
+  "Rembrandt", "Sun Tzu", "Ada Lovelace", "Archimedes", "Nero",
+  "Caravaggio", "Ibn Battuta", "Hypatia", "Montezuma", "Rasputin",
+  "El Cid", "Hildegard von Bingen", "Attila", "Sei Shonagon", "Dante",
+  "Vermeer", "Pythagoras", "Mary Shelley", "Robespierre", "Scheherazade",
 ];
 
 function pickRandom(pool: string[], count: number, exclude: string[]): string[] {
@@ -57,12 +68,12 @@ interface KeywordInputProps {
 export default function KeywordInput({ keywords, onChange }: KeywordInputProps) {
   const [input, setInput] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>(() =>
-    pickRandom(KEYWORD_POOL, 5, [])
+    pickRandom(KEYWORD_POOL, 10, [])
   );
 
   const refreshSuggestions = useCallback(
     (currentKeywords: string[]) => {
-      setSuggestions(pickRandom(KEYWORD_POOL, 5, currentKeywords));
+      setSuggestions(pickRandom(KEYWORD_POOL, 10, currentKeywords));
     },
     []
   );

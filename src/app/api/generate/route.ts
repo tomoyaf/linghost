@@ -21,10 +21,14 @@ export async function POST(req: NextRequest) {
   }
 
   let uid: string;
+  let authorDisplayName = "Anonymous";
+  let authorPhotoURL: string | null = null;
   try {
     const token = authHeader.slice(7);
     const decoded = await getAdminAuth().verifyIdToken(token);
     uid = decoded.uid;
+    authorDisplayName = decoded.name || "Anonymous";
+    authorPhotoURL = decoded.picture || null;
   } catch {
     return new Response(
       JSON.stringify({ error: "Invalid authentication token" }),
@@ -231,12 +235,19 @@ export async function POST(req: NextRequest) {
       // Save to Firestore (only on successful completion)
       if (fullStoryText.trim()) {
         try {
-          const storyId = await saveStory(uid, {
-            title: storyTitle,
-            text: fullStoryText,
-            config,
-            citations: uniqueCitations,
-          });
+          const storyId = await saveStory(
+            uid,
+            {
+              title: storyTitle,
+              text: fullStoryText,
+              config,
+              citations: uniqueCitations,
+            },
+            {
+              displayName: authorDisplayName,
+              photoURL: authorPhotoURL,
+            },
+          );
           await send("saved", storyId);
         } catch (saveErr) {
           console.error("Failed to save story:", saveErr);
