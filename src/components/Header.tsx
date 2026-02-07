@@ -9,7 +9,7 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
         <Link href="/" className="block">
           <h1 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight bg-gradient-to-r from-amber-200 via-amber-300 to-amber-200 bg-clip-text text-transparent">
-            LingHost
+            LinGhost
           </h1>
           <p className="mt-1 text-zinc-400 font-light text-xs tracking-widest uppercase">
             AI-Powered Story Generator
