@@ -6,7 +6,9 @@
 
 @layer base {
   body {
-    @apply bg-ink-950 text-ink-100 font-sans antialiased;
+    @apply bg-zinc-950 text-zinc-100 font-sans antialiased;
+    background-image: radial-gradient(ellipse at top, rgba(39,39,42,0.5) 0%, transparent 50%);
+    background-attachment: fixed;
   }
 }
 
@@ -23,28 +25,56 @@
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-ink-900;
+  @apply bg-zinc-900;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-ink-600 rounded-full;
+  @apply bg-zinc-600 rounded-full;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-ink-500;
+  @apply bg-zinc-500;
 }
 
 /* Firefox scrollbar */
 * {
   scrollbar-width: thin;
-  scrollbar-color: theme('colors.ink.600') theme('colors.ink.900');
+  scrollbar-color: theme('colors.zinc.600') theme('colors.zinc.900');
 }
 
 /* Story text styling */
 .story-text {
-  @apply font-serif text-lg leading-relaxed text-ink-100;
+  @apply font-serif text-lg leading-[1.8] text-zinc-100;
 }
 
 .story-text p {
   @apply mb-4 indent-8 first:indent-0;
+}
+
+/* Countdown timer */
+.countdown-digit {
+  @apply inline-block min-w-[2ch] text-center;
+}
+
+.countdown-timer {
+  @apply text-center;
+}
+
+/* Today story prompt glow */
+.today-story-glow {
+  animation: glowPulse 3s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+/* Library card hover */
+.library-card {
+  @apply p-5 bg-zinc-900/50 border border-zinc-800/40 rounded-xl transition-all;
+}
+
+.library-card:hover {
+  @apply border-zinc-700/70 bg-zinc-800/50 shadow-lg shadow-black/20;
 }

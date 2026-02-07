@@ -1,6 +1,8 @@
 import { NextRequest } from "next/server";
 import { createStoryStream } from "@/lib/claude";
 import { StoryConfig, Citation } from "@/lib/types";
+import { getAdminAuth } from "@/lib/firebase/admin";
+import { getTodayStory, saveStory } from "@/lib/firebase/firestore-server";
 
 export const maxDuration = 120;
 
@@ -9,6 +11,28 @@ function sseEncode(type: string, data: string): string {
 }
 
 export async function POST(req: NextRequest) {
+  // --- Auth check ---
+  const authHeader = req.headers.get("authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    return new Response(
+      JSON.stringify({ error: "Authentication required" }),
+      { status: 401, headers: { "Content-Type": "application/json" } },
+    );
+  }
+
+  let uid: string;
+  try {
+    const token = authHeader.slice(7);
+    const decoded = await getAdminAuth().verifyIdToken(token);
+    uid = decoded.uid;
+  } catch {
+    return new Response(
+      JSON.stringify({ error: "Invalid authentication token" }),
+      { status: 401, headers: { "Content-Type": "application/json" } },
+    );
+  }
+
+  // --- Body validation ---
   let config: StoryConfig;
   try {
     config = await req.json();
@@ -23,6 +47,15 @@ export async function POST(req: NextRequest) {
     return new Response(
       JSON.stringify({ error: "At least one keyword is required" }),
       { status: 400, headers: { "Content-Type": "application/json" } },
+    );
+  }
+
+  // --- Daily limit check ---
+  const existingStory = await getTodayStory(uid);
+  if (existingStory) {
+    return new Response(
+      JSON.stringify({ error: "daily_limit", storyId: existingStory.id }),
+      { status: 429, headers: { "Content-Type": "application/json" } },
     );
   }
 
@@ -56,6 +89,10 @@ export async function POST(req: NextRequest) {
     writer.write(encoder.encode(sseEncode(type, data)));
 
   (async () => {
+    let fullStoryText = "";
+    let storyTitle = "";
+    let streamCompleted = false;
+
     try {
       await send("status", "connecting");
 
@@ -83,11 +120,13 @@ export async function POST(req: NextRequest) {
 
           if (firstLine.startsWith("TITLE:")) {
             const title = firstLine.replace("TITLE:", "").trim();
+            storyTitle = title;
             await send("title", title);
             titleExtracted = true;
             // Send remaining text after title line
             const remaining = textBuffer.substring(firstNewline + 1);
             if (remaining) {
+              fullStoryText += remaining;
               await send("text", remaining);
             }
             textBuffer = remaining;
@@ -95,6 +134,7 @@ export async function POST(req: NextRequest) {
           } else {
             // No TITLE: prefix found, send as-is
             titleExtracted = true;
+            storyTitle = "Untitled";
             await send("title", "Untitled");
           }
         }
@@ -106,6 +146,7 @@ export async function POST(req: NextRequest) {
             // Don't send sources block text to client
             const beforeSources = text.split("SOURCES_START")[0];
             if (beforeSources.trim()) {
+              fullStoryText += beforeSources;
               await send("text", beforeSources);
             }
             sourcesBuffer += text.split("SOURCES_START")[1] || "";
@@ -130,6 +171,7 @@ export async function POST(req: NextRequest) {
             return;
           }
 
+          fullStoryText += text;
           await send("text", text);
         }
       });
@@ -175,6 +217,7 @@ export async function POST(req: NextRequest) {
       });
 
       const finalMessage = await stream.finalMessage();
+      streamCompleted = true;
 
       // Deduplicate citations by URL
       const uniqueCitations = citations.filter(
@@ -185,12 +228,30 @@ export async function POST(req: NextRequest) {
         await send("citation", JSON.stringify(citation));
       }
 
+      // Save to Firestore (only on successful completion)
+      if (fullStoryText.trim()) {
+        try {
+          const storyId = await saveStory(uid, {
+            title: storyTitle,
+            text: fullStoryText,
+            config,
+            citations: uniqueCitations,
+          });
+          await send("saved", storyId);
+        } catch (saveErr) {
+          console.error("Failed to save story:", saveErr);
+          // Don't fail the stream — story was still generated successfully
+        }
+      }
+
       await send("status", "done");
       await send("done", "");
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
       try {
-        await send("error", message);
+        if (!streamCompleted) {
+          await send("error", message);
+        }
       } catch {
         // Writer may be closed
       }

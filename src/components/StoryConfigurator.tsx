@@ -18,12 +18,16 @@ interface StoryConfiguratorProps {
   onGenerate: (config: StoryConfig) => void;
   onAbort: () => void;
   status: GenerationStatus;
+  disabled?: boolean;
+  onSignIn?: () => void;
 }
 
 export default function StoryConfigurator({
   onGenerate,
   onAbort,
   status,
+  disabled,
+  onSignIn,
 }: StoryConfiguratorProps) {
   const [keywords, setKeywords] = useState<string[]>([]);
   const [atmosphere, setAtmosphere] = useState<AtmosphereId>("dark");
@@ -47,7 +51,7 @@ export default function StoryConfigurator({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <KeywordInput keywords={keywords} onChange={setKeywords} />
       <AtmosphereSelector selected={atmosphere} onChange={setAtmosphere} />
       <StyleSelector selected={writingStyle} onChange={setWritingStyle} />
@@ -58,20 +62,28 @@ export default function StoryConfigurator({
       />
 
       <div>
-        <label className="block text-sm font-medium text-ink-300 mb-2">
+        <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2.5">
           Theme Note{" "}
-          <span className="text-ink-500">(optional)</span>
+          <span className="text-zinc-500 normal-case font-normal tracking-normal">(optional)</span>
         </label>
         <textarea
           value={themeNote}
           onChange={(e) => setThemeNote(e.target.value)}
           placeholder="Any additional direction for the story..."
           rows={2}
-          className="w-full p-3 bg-ink-900/50 border border-ink-700/50 rounded-lg text-sm text-ink-100 placeholder:text-ink-600 focus:border-amber-500/50 focus:outline-none transition-colors resize-none"
+          className="w-full p-3 bg-zinc-900/50 border border-zinc-700/50 rounded-lg text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-amber-500/50 focus:outline-none focus:ring-1 focus:ring-amber-500/20 transition-colors resize-none"
         />
       </div>
 
-      {isGenerating ? (
+      {disabled && onSignIn ? (
+        <button
+          type="button"
+          onClick={onSignIn}
+          className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 text-zinc-950 font-semibold text-sm hover:from-amber-500 hover:to-amber-400 transition-all shadow-lg shadow-amber-500/20"
+        >
+          Sign in to Generate
+        </button>
+      ) : isGenerating ? (
         <button
           type="button"
           onClick={onAbort}
@@ -83,8 +95,8 @@ export default function StoryConfigurator({
         <button
           type="button"
           onClick={handleGenerate}
-          disabled={keywords.length === 0}
-          className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 text-ink-950 font-semibold text-sm hover:from-amber-500 hover:to-amber-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-lg shadow-amber-500/20 disabled:shadow-none"
+          disabled={keywords.length === 0 || disabled}
+          className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 text-zinc-950 font-semibold text-sm hover:from-amber-500 hover:to-amber-400 hover:shadow-amber-500/30 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-lg shadow-amber-500/20 disabled:shadow-none"
         >
           Generate Story
         </button>

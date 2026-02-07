@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import { AuthProvider } from "@/contexts/AuthContext";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "LingHost — AI Story Generator",
+  title: "LinGhost — AI Story Generator",
   description:
     "Generate AI-powered short stories with customizable atmosphere, style, and real-world inspiration.",
 };
@@ -14,7 +15,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className="min-h-screen">{children}</body>
+      <body className="min-h-screen">
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }

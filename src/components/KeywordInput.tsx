@@ -34,21 +34,21 @@ export default function KeywordInput({ keywords, onChange }: KeywordInputProps) 
 
   return (
     <div>
-      <label className="block text-sm font-medium text-ink-300 mb-2">
+      <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2.5">
         Keywords{" "}
-        <span className="text-ink-500">({keywords.length}/5)</span>
+        <span className="text-zinc-500 normal-case font-normal tracking-normal">({keywords.length}/5)</span>
       </label>
-      <div className="flex flex-wrap gap-2 p-3 bg-ink-900/50 border border-ink-700/50 rounded-lg focus-within:border-amber-500/50 transition-colors">
+      <div className="flex flex-wrap gap-2 p-3 bg-zinc-900/50 border border-zinc-700/40 rounded-lg focus-within:border-amber-500/40 focus-within:ring-1 focus-within:ring-amber-500/20 transition-colors">
         {keywords.map((keyword, i) => (
           <span
             key={keyword}
-            className="inline-flex items-center gap-1 px-3 py-1 bg-ink-800 text-ink-200 rounded-full text-sm border border-ink-700/50"
+            className="inline-flex items-center gap-1 px-3 py-1 bg-zinc-800 text-zinc-200 rounded-full text-sm border border-zinc-700/50"
           >
             {keyword}
             <button
               type="button"
               onClick={() => removeKeyword(i)}
-              className="ml-1 text-ink-500 hover:text-ink-200 transition-colors"
+              className="ml-1 text-zinc-500 hover:text-zinc-200 transition-colors"
               aria-label={`Remove ${keyword}`}
             >
               &times;
@@ -65,7 +65,7 @@ export default function KeywordInput({ keywords, onChange }: KeywordInputProps) 
             keywords.length < 5 ? "Type & press Enter..." : "Max 5 keywords"
           }
           disabled={keywords.length >= 5}
-          className="flex-1 min-w-[120px] bg-transparent outline-none text-ink-100 placeholder:text-ink-600 text-sm"
+          className="flex-1 min-w-[120px] bg-transparent outline-none text-zinc-100 placeholder:text-zinc-600 text-sm"
         />
       </div>
     </div>

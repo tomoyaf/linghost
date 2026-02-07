@@ -9,7 +9,8 @@ interface UseStoryStreamReturn {
   citations: Citation[];
   status: GenerationStatus;
   error: string | null;
-  generate: (config: StoryConfig) => void;
+  dailyLimitReached: boolean;
+  generate: (config: StoryConfig, getIdToken: () => Promise<string>) => void;
   abort: () => void;
   reset: () => void;
 }
@@ -20,6 +21,7 @@ export function useStoryStream(): UseStoryStreamReturn {
   const [citations, setCitations] = useState<Citation[]>([]);
   const [status, setStatus] = useState<GenerationStatus>("idle");
   const [error, setError] = useState<string | null>(null);
+  const [dailyLimitReached, setDailyLimitReached] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
 
   const reset = useCallback(() => {
@@ -32,6 +34,7 @@ export function useStoryStream(): UseStoryStreamReturn {
     setCitations([]);
     setStatus("idle");
     setError(null);
+    setDailyLimitReached(false);
   }, []);
 
   const abort = useCallback(() => {
@@ -42,111 +45,129 @@ export function useStoryStream(): UseStoryStreamReturn {
     setStatus("idle");
   }, []);
 
-  const generate = useCallback((config: StoryConfig) => {
-    // Reset previous state
-    if (abortRef.current) {
-      abortRef.current.abort();
-    }
-    setStoryText("");
-    setStoryTitle("");
-    setCitations([]);
-    setError(null);
-    setStatus("connecting");
+  const generate = useCallback(
+    (config: StoryConfig, getIdToken: () => Promise<string>) => {
+      // Reset previous state
+      if (abortRef.current) {
+        abortRef.current.abort();
+      }
+      setStoryText("");
+      setStoryTitle("");
+      setCitations([]);
+      setError(null);
+      setDailyLimitReached(false);
+      setStatus("connecting");
 
-    const controller = new AbortController();
-    abortRef.current = controller;
+      const controller = new AbortController();
+      abortRef.current = controller;
 
-    (async () => {
-      try {
-        const response = await fetch("/api/generate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(config),
-          signal: controller.signal,
-        });
+      (async () => {
+        try {
+          const token = await getIdToken();
 
-        if (!response.ok) {
-          const err = await response.json();
-          setError(err.error || "Failed to start generation");
-          setStatus("error");
-          return;
-        }
+          const response = await fetch("/api/generate", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(config),
+            signal: controller.signal,
+          });
 
-        if (!response.body) {
-          setError("Streaming not supported");
-          setStatus("error");
-          return;
-        }
+          if (!response.ok) {
+            const err = await response.json();
+            if (err.error === "daily_limit") {
+              setDailyLimitReached(true);
+              setError("You've already generated today's story.");
+              setStatus("error");
+              return;
+            }
+            setError(err.error || "Failed to start generation");
+            setStatus("error");
+            return;
+          }
 
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = "";
+          if (!response.body) {
+            setError("Streaming not supported");
+            setStatus("error");
+            return;
+          }
 
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          let buffer = "";
 
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split("\n\n");
-          buffer = lines.pop() || "";
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
 
-          for (const line of lines) {
-            const dataPrefix = "data: ";
-            const dataLine = line
-              .split("\n")
-              .find((l) => l.startsWith(dataPrefix));
-            if (!dataLine) continue;
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split("\n\n");
+            buffer = lines.pop() || "";
 
-            try {
-              const event = JSON.parse(dataLine.slice(dataPrefix.length));
+            for (const line of lines) {
+              const dataPrefix = "data: ";
+              const dataLine = line
+                .split("\n")
+                .find((l) => l.startsWith(dataPrefix));
+              if (!dataLine) continue;
 
-              switch (event.type) {
-                case "text":
-                  setStoryText((prev) => prev + event.data);
-                  break;
-                case "title":
-                  setStoryTitle(event.data);
-                  break;
-                case "citation":
-                  try {
-                    const citation = JSON.parse(event.data);
-                    setCitations((prev) => [...prev, citation]);
-                  } catch {
-                    // Skip malformed citation
-                  }
-                  break;
-                case "status":
-                  if (event.data === "done") {
-                    setStatus("done");
-                  } else if (event.data === "searching") {
-                    setStatus("searching");
-                  } else if (event.data === "generating") {
-                    setStatus("generating");
-                  } else if (event.data === "connecting") {
-                    setStatus("connecting");
-                  }
-                  break;
-                case "error":
-                  setError(event.data);
-                  setStatus("error");
-                  break;
-                case "done":
-                  break;
+              try {
+                const event = JSON.parse(dataLine.slice(dataPrefix.length));
+
+                switch (event.type) {
+                  case "text":
+                    setStoryText((prev) => prev + event.data);
+                    break;
+                  case "title":
+                    setStoryTitle(event.data);
+                    break;
+                  case "citation":
+                    try {
+                      const citation = JSON.parse(event.data);
+                      setCitations((prev) => [...prev, citation]);
+                    } catch {
+                      // Skip malformed citation
+                    }
+                    break;
+                  case "status":
+                    if (event.data === "done") {
+                      setStatus("done");
+                    } else if (event.data === "searching") {
+                      setStatus("searching");
+                    } else if (event.data === "generating") {
+                      setStatus("generating");
+                    } else if (event.data === "connecting") {
+                      setStatus("connecting");
+                    }
+                    break;
+                  case "error":
+                    setError(event.data);
+                    setStatus("error");
+                    break;
+                  case "saved":
+                    // Story saved to Firestore — storyId in event.data
+                    break;
+                  case "done":
+                    break;
+                }
+              } catch {
+                // Skip malformed SSE
               }
-            } catch {
-              // Skip malformed SSE
             }
           }
+        } catch (err) {
+          if (err instanceof DOMException && err.name === "AbortError") {
+            return;
+          }
+          setError(err instanceof Error ? err.message : "Connection failed");
+          setStatus("error");
         }
-      } catch (err) {
-        if (err instanceof DOMException && err.name === "AbortError") {
-          return;
-        }
-        setError(err instanceof Error ? err.message : "Connection failed");
-        setStatus("error");
-      }
-    })();
-  }, []);
+      })();
+    },
+    [],
+  );
 
   return {
     storyText,
@@ -154,6 +175,7 @@ export function useStoryStream(): UseStoryStreamReturn {
     citations,
     status,
     error,
+    dailyLimitReached,
     generate,
     abort,
     reset,

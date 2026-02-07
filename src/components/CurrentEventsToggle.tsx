@@ -17,7 +17,7 @@ export default function CurrentEventsToggle({
         aria-checked={enabled}
         onClick={() => onChange(!enabled)}
         className={`relative mt-0.5 inline-flex h-5 w-9 flex-shrink-0 items-center rounded-full transition-colors ${
-          enabled ? "bg-amber-500" : "bg-ink-700"
+          enabled ? "bg-amber-500" : "bg-zinc-700"
         }`}
       >
         <span
@@ -27,10 +27,10 @@ export default function CurrentEventsToggle({
         />
       </button>
       <div>
-        <span className="text-sm font-medium text-ink-200">
+        <span className="text-sm font-medium text-zinc-200">
           Incorporate Current Events
         </span>
-        <p className="text-xs text-ink-500 mt-0.5">
+        <p className="text-xs text-zinc-500 mt-0.5">
           Uses web search to weave real-world news into the story
         </p>
       </div>

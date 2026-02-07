@@ -13,21 +13,6 @@ const config: Config = {
         serif: ["Lora", "Georgia", "serif"],
         sans: ["Inter", "system-ui", "sans-serif"],
       },
-      colors: {
-        ink: {
-          50: "#f5f3f0",
-          100: "#e8e4dd",
-          200: "#d4cdc2",
-          300: "#b8ad9e",
-          400: "#9a8b78",
-          500: "#7d6b56",
-          600: "#655443",
-          700: "#4d3f33",
-          800: "#362c24",
-          900: "#1f1a15",
-          950: "#0f0d0a",
-        },
-      },
       animation: {
         "cursor-blink": "blink 1s step-end infinite",
         "fade-in": "fadeIn 0.5s ease-out",

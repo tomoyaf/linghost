@@ -51,6 +51,14 @@ export type GenerationStatus =
   | "error";
 
 export interface SSEEvent {
-  type: "text" | "title" | "citation" | "status" | "error" | "done";
+  type: "text" | "title" | "citation" | "status" | "error" | "done" | "saved";
   data: string;
+}
+
+export interface StoredStory {
+  title: string;
+  text: string;
+  config: StoryConfig;
+  citations: Citation[];
+  createdAt: Date;
 }

@@ -49,8 +49,7 @@ export default function StoryDisplay({
   if (status === "idle" && !text && !error) {
     return (
       <div className="flex items-center justify-center h-full min-h-[400px]">
-        <div className="text-center text-ink-600">
-          <div className="text-6xl mb-4 opacity-30">&#9997;</div>
+        <div className="text-center text-zinc-500">
           <p className="font-serif text-xl italic">
             Choose your ingredients, and let the story unfold...
           </p>
@@ -71,7 +70,7 @@ export default function StoryDisplay({
       {/* Status bar */}
       {isStreaming && (
         <div className="flex items-center gap-2 mb-4 text-sm text-amber-400/80">
-          <span className="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+          <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
           {STATUS_MESSAGES[status]}
         </div>
       )}
@@ -85,7 +84,7 @@ export default function StoryDisplay({
 
       {/* Title */}
       {title && (
-        <h2 className="font-serif text-3xl font-bold text-ink-50 mb-6 animate-fade-in">
+        <h2 className="font-serif text-2xl sm:text-3xl font-bold text-zinc-50 mb-6 animate-fade-in">
           {title}
         </h2>
       )}
@@ -105,22 +104,22 @@ export default function StoryDisplay({
 
       {/* Actions */}
       {status === "done" && text && (
-        <div className="flex items-center gap-3 mt-8 pt-6 border-t border-ink-800">
+        <div className="flex items-center gap-3 mt-8 pt-6 border-t border-zinc-800">
           <button
             onClick={handleCopy}
-            className="px-4 py-2 text-sm text-ink-400 hover:text-ink-200 border border-ink-700/50 rounded-lg hover:bg-ink-800/50 transition-all"
+            className="px-4 py-2 text-sm text-zinc-400 hover:text-zinc-200 bg-zinc-800/50 border border-zinc-700/40 rounded-lg hover:bg-zinc-700/50 transition-all"
           >
             Copy
           </button>
           <button
             onClick={handleDownload}
-            className="px-4 py-2 text-sm text-ink-400 hover:text-ink-200 border border-ink-700/50 rounded-lg hover:bg-ink-800/50 transition-all"
+            className="px-4 py-2 text-sm text-zinc-400 hover:text-zinc-200 bg-zinc-800/50 border border-zinc-700/40 rounded-lg hover:bg-zinc-700/50 transition-all"
           >
             Download
           </button>
           <button
             onClick={onReset}
-            className="ml-auto px-4 py-2 text-sm text-amber-400/80 hover:text-amber-300 border border-amber-500/30 rounded-lg hover:bg-amber-500/10 transition-all"
+            className="ml-auto px-4 py-2 text-sm text-amber-400 hover:text-amber-300 border border-amber-500/30 rounded-lg hover:bg-amber-500/10 transition-all"
           >
             New Story
           </button>

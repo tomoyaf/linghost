@@ -10,7 +10,7 @@ export function buildSystemPrompt(config: StoryConfig): string {
   const style = WRITING_STYLES.find((s) => s.id === config.writingStyle)!;
   const length = STORY_LENGTHS.find((l) => l.id === config.storyLength)!;
 
-  let prompt = `You are LingHost, a masterful storyteller with a gift for weaving captivating narratives.
+  let prompt = `You are a masterful storyteller with a gift for weaving captivating narratives.
 
 Your task is to write a short story with the following parameters:
 

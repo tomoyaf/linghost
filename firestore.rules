@@ -1,0 +1,17 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users can only read their own stories
+    match /users/{userId}/stories/{storyId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      // All writes go through firebase-admin (server-side)
+      allow write: if false;
+    }
+
+    // Deny everything else
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
