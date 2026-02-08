@@ -1,6 +1,7 @@
 "use client";
 
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import StoryConfigurator from "@/components/StoryConfigurator";
 import StoryDisplay from "@/components/StoryDisplay";
 import TodayStoryPrompt from "@/components/TodayStoryPrompt";
@@ -8,8 +9,9 @@ import TodayStoryView from "@/components/TodayStoryView";
 import { useStoryStream } from "@/hooks/useStoryStream";
 import { useTodayStory } from "@/hooks/useTodayStory";
 import { useAuth } from "@/contexts/AuthContext";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { StoryConfig } from "@/lib/types";
+import Link from "next/link";
 
 function SkeletonPanel() {
   return (
@@ -27,6 +29,7 @@ function SkeletonPanel() {
 export default function Home() {
   const { user, loading: authLoading, signInWithGoogle, getIdToken } = useAuth();
   const { todayStory, loading: storyLoading, hasGeneratedToday, refresh } = useTodayStory(user?.uid);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const {
     storyText,
@@ -74,10 +77,29 @@ export default function Home() {
               </p>
               <button
                 onClick={signInWithGoogle}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-600 to-amber-500 text-zinc-950 font-semibold text-sm rounded-lg hover:from-amber-500 hover:to-amber-400 transition-all shadow-lg shadow-amber-500/20"
+                disabled={!agreedToTerms}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-600 to-amber-500 text-zinc-950 font-semibold text-sm rounded-lg hover:from-amber-500 hover:to-amber-400 transition-all shadow-lg shadow-amber-500/20 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
               >
                 Sign in with Google
               </button>
+              <label className="flex items-start gap-2 mt-4 text-xs text-zinc-500 cursor-pointer justify-center">
+                <input
+                  type="checkbox"
+                  checked={agreedToTerms}
+                  onChange={(e) => setAgreedToTerms(e.target.checked)}
+                  className="mt-0.5 accent-amber-500"
+                />
+                <span>
+                  I agree to the{" "}
+                  <Link href="/legal/terms" className="text-amber-400 hover:text-amber-300 transition-colors">
+                    Terms of Service
+                  </Link>{" "}
+                  and{" "}
+                  <Link href="/legal/privacy" className="text-amber-400 hover:text-amber-300 transition-colors">
+                    Privacy Policy
+                  </Link>
+                </span>
+              </label>
             </div>
           </div>
         </div>
@@ -122,10 +144,10 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex flex-col">
       <Header />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 w-full">
         <div className="flex flex-col lg:flex-row gap-8 pb-12">
           {/* Configurator panel */}
           <div className="w-full lg:w-[380px] flex-shrink-0">
@@ -146,6 +168,8 @@ export default function Home() {
           </div>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }

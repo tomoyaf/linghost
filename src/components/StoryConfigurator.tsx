@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   StoryConfig,
   AtmosphereId,
@@ -35,6 +36,7 @@ export default function StoryConfigurator({
   const [storyLength, setStoryLength] = useState<StoryLengthId>("short");
   const [includeCurrentEvents, setIncludeCurrentEvents] = useState(false);
   const [themeNote, setThemeNote] = useState("");
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const isGenerating = status === "generating" || status === "connecting" || status === "searching";
 
@@ -76,13 +78,34 @@ export default function StoryConfigurator({
       </div>
 
       {disabled && onSignIn ? (
-        <button
-          type="button"
-          onClick={onSignIn}
-          className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 text-zinc-950 font-semibold text-sm hover:from-amber-500 hover:to-amber-400 transition-all shadow-lg shadow-amber-500/20"
-        >
-          Sign in to Generate
-        </button>
+        <div className="space-y-3">
+          <button
+            type="button"
+            onClick={onSignIn}
+            disabled={!agreedToTerms}
+            className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 text-zinc-950 font-semibold text-sm hover:from-amber-500 hover:to-amber-400 transition-all shadow-lg shadow-amber-500/20 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
+          >
+            Sign in to Generate
+          </button>
+          <label className="flex items-start gap-2 text-xs text-zinc-500 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={agreedToTerms}
+              onChange={(e) => setAgreedToTerms(e.target.checked)}
+              className="mt-0.5 accent-amber-500"
+            />
+            <span>
+              I agree to the{" "}
+              <Link href="/legal/terms" className="text-amber-400 hover:text-amber-300 transition-colors">
+                Terms of Service
+              </Link>{" "}
+              and{" "}
+              <Link href="/legal/privacy" className="text-amber-400 hover:text-amber-300 transition-colors">
+                Privacy Policy
+              </Link>
+            </span>
+          </label>
+        </div>
       ) : isGenerating ? (
         <button
           type="button"

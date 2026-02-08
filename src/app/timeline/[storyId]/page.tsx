@@ -5,8 +5,10 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import CitationsList from "@/components/CitationsList";
 import LikeButton from "@/components/LikeButton";
+import ShareButtons from "@/components/ShareButtons";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   fetchTimelineStory,
@@ -65,10 +67,10 @@ export default function TimelineStoryDetailPage() {
   const paragraphs = story?.text.split(/\n\n+/).filter((p) => p.trim()) || [];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex flex-col">
       <Header />
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+      <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 w-full">
         <div className="pb-12">
           <Link
             href="/timeline"
@@ -163,11 +165,14 @@ export default function TimelineStoryDetailPage() {
                 >
                   Download
                 </button>
+                <ShareButtons title={story.title} />
               </div>
             </div>
           ) : null}
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }

@@ -76,7 +76,7 @@ export default function LikeButton({
       }`}
     >
       <svg
-        className="w-4.5 h-4.5"
+        className="w-4 h-4"
         fill={liked ? "currentColor" : "none"}
         stroke="currentColor"
         strokeWidth={1.5}

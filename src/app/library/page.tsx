@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   fetchUserStories,
@@ -58,10 +59,10 @@ export default function LibraryPage() {
     }`;
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex flex-col">
       <Header />
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+      <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 w-full">
         <div className="pb-12">
           <h2 className="font-serif text-3xl font-bold text-zinc-50 mb-6">
             Story Library
@@ -232,6 +233,8 @@ export default function LibraryPage() {
           )}
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }

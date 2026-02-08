@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AuthProvider } from "@/contexts/AuthContext";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -17,6 +18,7 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className="min-h-screen">
         <AuthProvider>{children}</AuthProvider>
+        <GoogleAnalytics />
       </body>
     </html>
   );
