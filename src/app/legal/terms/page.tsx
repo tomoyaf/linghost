@@ -30,7 +30,7 @@ export default function TermsPage() {
                 1. Acceptance of Terms
               </h3>
               <p>
-                By accessing or using linGhost (&quot;the Service&quot;), operated at linghost.com, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use the Service.
+                By accessing or using linGhost (&quot;the Service&quot;), operated at linghost.app, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use the Service.
               </p>
             </section>
 

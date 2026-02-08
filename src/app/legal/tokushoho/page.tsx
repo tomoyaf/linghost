@@ -11,7 +11,7 @@ const ITEMS = [
     value:
       "tomoya.fujita@fluxenic.com（電話番号は請求があった場合に遅滞なく開示）",
   },
-  { label: "販売URL", value: "https://linghost.com" },
+  { label: "販売URL", value: "https://linghost.app" },
   {
     label: "販売価格",
     value: "月額プラン: 980円（税込） / 年額プラン: 9,800円（税込）",

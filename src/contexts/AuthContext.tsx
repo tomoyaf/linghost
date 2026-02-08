@@ -15,6 +15,7 @@ import {
   signOut as firebaseSignOut,
 } from "firebase/auth";
 import { getClientAuth, googleProvider } from "@/lib/firebase/client";
+import LoginModal from "@/components/LoginModal";
 
 interface AuthContextValue {
   user: User | null;
@@ -22,6 +23,9 @@ interface AuthContextValue {
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
   getIdToken: () => Promise<string>;
+  isLoginModalOpen: boolean;
+  openLoginModal: () => void;
+  closeLoginModal: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -29,6 +33,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   useEffect(() => {
     const auth = getClientAuth();
@@ -53,11 +58,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return currentUser.getIdToken();
   }, []);
 
+  const openLoginModal = useCallback(() => setIsLoginModalOpen(true), []);
+  const closeLoginModal = useCallback(() => setIsLoginModalOpen(false), []);
+
   return (
     <AuthContext.Provider
-      value={{ user, loading, signInWithGoogle, signOut, getIdToken }}
+      value={{ user, loading, signInWithGoogle, signOut, getIdToken, isLoginModalOpen, openLoginModal, closeLoginModal }}
     >
       {children}
+      <LoginModal />
     </AuthContext.Provider>
   );
 }
