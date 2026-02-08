@@ -16,7 +16,7 @@ import { DocumentSnapshot } from "firebase/firestore";
 const PAGE_SIZE = 10;
 
 export default function TimelinePage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   const [stories, setStories] = useState<TimelineStory[]>([]);
   const [likedSet, setLikedSet] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
@@ -34,15 +34,14 @@ export default function TimelinePage() {
     [],
   );
 
-  // Initial load — wait for auth to settle before querying Firestore
+  // Initial load — timeline is public, no need to wait for auth
   useEffect(() => {
-    if (authLoading) return;
     setLoading(true);
     loadStories()
       .then((s) => setStories(s))
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [loadStories, authLoading]);
+  }, [loadStories]);
 
   // Load like statuses when user or stories change
   useEffect(() => {
@@ -82,7 +81,7 @@ export default function TimelinePage() {
             Timeline
           </h2>
 
-          {authLoading || loading ? (
+          {loading ? (
             <div className="space-y-4">
               {[...Array(3)].map((_, i) => (
                 <div key={i} className="library-card animate-pulse">

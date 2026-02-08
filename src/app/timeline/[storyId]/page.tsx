@@ -16,7 +16,7 @@ import { TimelineStory } from "@/lib/types";
 
 export default function TimelineStoryDetailPage() {
   const { storyId } = useParams<{ storyId: string }>();
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   const [story, setStory] = useState<TimelineStory | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -77,7 +77,7 @@ export default function TimelineStoryDetailPage() {
             &larr; Back to Timeline
           </Link>
 
-          {authLoading || loading ? (
+          {loading ? (
             <div className="animate-pulse space-y-4">
               <div className="h-8 bg-zinc-800/50 rounded w-1/3" />
               <div className="h-4 bg-zinc-800/50 rounded w-full" />
