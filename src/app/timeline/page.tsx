@@ -34,14 +34,15 @@ export default function TimelinePage() {
     [],
   );
 
-  // Initial load
+  // Initial load — wait for auth to settle before querying Firestore
   useEffect(() => {
+    if (authLoading) return;
     setLoading(true);
     loadStories()
       .then((s) => setStories(s))
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [loadStories]);
+  }, [loadStories, authLoading]);
 
   // Load like statuses when user or stories change
   useEffect(() => {
