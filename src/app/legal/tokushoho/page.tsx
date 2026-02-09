@@ -3,8 +3,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 const ITEMS = [
-  { label: "販売業者", value: "請求があった場合は遅滞なく開示します" },
-  { label: "代表者", value: "請求があった場合は遅滞なく開示します" },
+  { label: "販売業者", value: "藤田 智也" },
+  { label: "運営統括責任者", value: "藤田 智也" },
   { label: "所在地", value: "請求があった場合は遅滞なく開示します" },
   {
     label: "連絡先",
